@@ -10,9 +10,10 @@
   
 </div>
 </div>
-<h3>  Welcome in udacity Store Front </h3>
 
- <p>  this is  udacity app  store front created  processing CRUD on that partical system </p>
+# Udacity Storefront API
+
+A Node.js and TypeScript backend application built to handle CRUD operations for an e-commerce storefront API.
 
 ## Contents:
 

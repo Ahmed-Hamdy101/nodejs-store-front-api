@@ -1,30 +1,20 @@
-// IMPORT DOT ENV
-import dotenv from "dotenv";
-// LOAD DOT ENV VARIABLES
+import dotenv from 'dotenv';
+
 dotenv.config();
 
-// IMPOR ENV VARIABLES TO SECURE THE INFORMARIONS
-const {PORT,
-    PG_HOST,
-    PG_USER,
-    PG_DB,
-    PG_DB_TEST,
-    PG_PASSWORD,
-    PG_PORT,
-    ENV,
-    PG_BCRYPY_SC,
-    PG_SALT_ROUND,
-    PG_MYTOKEN
-} = process.env;
+const env = process.env;
+const port = Number(env.PORT ?? '4000');
+const dbPort = Number(env.PG_PORT ?? '5432');
+const activeDatabase = env.ENV === 'prod' ? env.PG_DB : env.PG_DB_TEST ?? env.PG_DB ?? 'storefront';
 
 export default {
-host:PG_HOST,
-user:PG_USER,
-db_user:ENV == 'dev' ? PG_DB:PG_DB_TEST,
-password:PG_PASSWORD,
-db_port:PG_PORT ,
-port:PORT ,
-peppar:PG_BCRYPY_SC,
-salt:PG_SALT_ROUND,
-secureToken:PG_MYTOKEN
+  host: env.PG_HOST ?? 'localhost',
+  user: env.PG_USER ?? 'postgres',
+  password: env.PG_PASSWORD ?? 'postgres',
+  db_user: activeDatabase,
+  db_port: Number.isFinite(dbPort) ? dbPort : 5432,
+  port: Number.isFinite(port) ? port : 4000,
+  peppar: env.PG_BCRYPY_SC ?? 'storefront',
+  salt: env.PG_SALT_ROUND ?? '10',
+  secureToken: env.PG_MYTOKEN ?? 'change-me',
 };

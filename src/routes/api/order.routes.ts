@@ -1,17 +1,12 @@
-//Router-express
-import { Router } from "express";
-// import controllers
-import  * as orderproductControllers from "../../handlers/orderController";
+import { Router } from 'express';
+import * as orderproductControllers from '../../handlers/orderController';
+import authenticationMiddleware from '../../Middleware/Auth/auth';
 
-import authenticationMiddleware from "../../Middleware/Auth/auth";
+const orderRoutes = Router();
 
-// create intance from  routes
-const orderRouts = Router();
-// add Routers assined to first Endpoint 
-orderRouts.route('/createorder').post( authenticationMiddleware,orderproductControllers.pushOrderFunc);
-orderRouts.route('/:pid/Orderproduct').get(authenticationMiddleware ,orderproductControllers.GetOrderproduct);
-orderRouts.route('/:Userid').get( authenticationMiddleware,orderproductControllers.GetSpecificOrderByUserid);
-orderRouts.route('/:oid').get( authenticationMiddleware,orderproductControllers.GetSpecificOrderByUserid);
-orderRouts.route('/:oid/addproductorder').post(authenticationMiddleware ,orderproductControllers.CreateOrderToProduct);
+orderRoutes.post('/createorder', authenticationMiddleware, orderproductControllers.pushOrderFunc);
+orderRoutes.get('/:pid/Orderproduct', authenticationMiddleware, orderproductControllers.GetOrderproduct);
+orderRoutes.get('/:userid', authenticationMiddleware, orderproductControllers.GetSpecificOrderByUserid);
+orderRoutes.post('/:oid/addproductorder', authenticationMiddleware, orderproductControllers.CreateOrderToProduct);
 
-export default orderRouts;
+export default orderRoutes;

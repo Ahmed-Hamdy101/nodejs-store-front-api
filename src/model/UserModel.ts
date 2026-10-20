@@ -100,25 +100,32 @@ export class USER_MODEL {
   async verifyAuthSigninUser(f_name:string,passwords:string): Promise<User|null> {
     try {
       const database = await client.connect();
-       const sql = 'SELECT passwords FROM user_tb WHERE f_name=$1';
-       // @ts-ignore
-       
-        const fetch = await database.query(sql, [f_name]);
-        // store the result in  variables 
-        const rows =  fetch.rows.length;
-        switch (rows) {
-          case rows :
-          const {passwords:psd }=fetch.rows[0], bcry= bcrypt.compareSync(`${passwords}${config.peppar}`,psd);
-          (bcry == true ? "success!": "Error in bcry") 
-          const query ='SELECT * FROM user_tb WHERE f_name=($1)', fetchAll  =  await  database.query(query,[f_name]) ;
-          return fetchAll.rows[0];
+      const sql = 'SELECT * FROM user_tb WHERE f_name=$1';
+      const fetch = await database.query(sql, [f_name]);
+      database.release();
 
-          default:
-          database.release();
-          return null;
-        }
-      } catch (err) {
-        throw new Error(`Unable to Auth !${err} `);
+      if (!fetch.rows.length) {
+        return null;
+      }
+
+      const user = fetch.rows[0];
+      const passwordCandidates = [passwords, `${passwords}${config.peppar}`];
+      const validPassword = passwordCandidates.some((candidate) =>
+        bcrypt.compareSync(candidate, user.passwords)
+      );
+
+      if (!validPassword) {
+        return null;
+      }
+
+      return {
+        id: user.id,
+        f_name: user.f_name,
+        l_name: user.l_name,
+        passwords: user.passwords,
+      };
+    } catch (_err) {
+      return null;
     }
   }
 

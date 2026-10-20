@@ -69,44 +69,35 @@ export const GetSpecificUser =async (req:Request, res:Response,next:NextFunction
  
 // create user
 // creating express response
-export const CreateRecordUser =async (req:Request, res:Response,next:NextFunction) => {       
-  // handdling errors !
-  const {f_name,l_name,secret} = req.body;
-  
-  if (!f_name&&l_name&&secret) {
+export const CreateRecordUser = async (req: Request, res: Response, next: NextFunction) => {
+  const { f_name, l_name, passwords } = req.body;
 
-          if (f_name && l_name && secret == '' ) {
-                  return res.send(_error_general.checkIn.POST_ISEMPTY)
-          }
-          if ( isNaN(parseInt( f_name && l_name)) ){
-                  return res.send(_error_general.checkType.CHECKIS_STR)
-          }
-
-          if ( typeof f_name && l_name && secret !== 'string' ) {
-                  return  res.send(_error_general.checkType.CHECKIS_STR)
-          }
-          if ( secret.length<6 ) {
-                  return  res.send(_error_general.checkIn.PASS)
-          }
-
-  }
- 
-  try{     
-          // take requset from the body as post data 
-          const UserCreation = await Usermodel.CreateUser(req.body);
-          const token = jwt.sign({UserCreation},config.secureToken as unknown as string);
-          if(!UserCreation) {
-                return res.status(401).json({status:"error",message:"Cannot create token ! or generated"})  
-              }
-          // this a success message
-          return  res.json({status:"Ok!",data:{...UserCreation,token},message:"This Fine The User has been Created and also token "});
- 
-  }catch (error) {
-          res.status(400).json(error);      
-          next(error);
+  if (!f_name || !l_name || !passwords) {
+    return res.status(400).json({ status: 'error', message: 'First name, last name, and password are required.' });
   }
 
-}
+  if (typeof f_name !== 'string' || typeof l_name !== 'string' || typeof passwords !== 'string') {
+    return res.status(400).json({ status: 'error', message: 'Fields must be strings.' });
+  }
+
+  if (f_name.trim() === '' || l_name.trim() === '' || passwords.trim().length < 6) {
+    return res.status(400).json({ status: 'error', message: 'Invalid user data.' });
+  }
+
+  try {
+    const userPayload = { ...req.body, f_name: f_name.trim(), l_name: l_name.trim() };
+    const UserCreation = await Usermodel.CreateUser(userPayload);
+    const token = jwt.sign({ user: UserCreation }, config.secureToken as string);
+
+    if (!UserCreation) {
+      return res.status(401).json({ status: 'error', message: 'Cannot create user.' });
+    }
+
+    return res.status(201).json({ status: 'Ok!', data: { ...UserCreation, token }, message: 'User created successfully.' });
+  } catch (error) {
+    return next(error);
+  }
+};
  // ......................................{{ END  -- CREATE ONE SET  IF IT FOUND}}.................................................
 
 
@@ -170,19 +161,23 @@ export const DeleteUser =async (req:Request, res:Response,next:NextFunction) => 
  // ......................................{{ END DELETE --  ONE SET  IF IT FOUND}}.................................................
  
 
- export const authentication = async (req:Request, res:Response,next:NextFunction) => {
-  
-  try{
-          const {f_name ,passwords}= req.body;
-          const userPayload = await Usermodel.verifyAuthSigninUser(f_name,passwords);    
-        //   const token = jwt.sign({userPayload},config.secureToken as unknown as string)
-        //   if(!userPayload) {
-        //     return res.status(401).json({status:"error",message:"user not exist!"})  
-        //   }
-          return res.status(200).json({status:"success!",data:{...userPayload} ,message:"user is exit"})  
-    }catch(error) {
-          res.status(400).json(error);      
-          next(error);
+export const authentication = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { f_name, passwords } = req.body ?? {};
+
+    if (!f_name || !passwords) {
+      return res.status(401).json({ status: 'error', message: 'Missing login information.' });
     }
 
-}
+    const userPayload = await Usermodel.verifyAuthSigninUser(f_name, passwords);
+
+    if (!userPayload) {
+      return res.status(401).json({ status: 'error', message: 'Invalid credentials.' });
+    }
+
+    const token = jwt.sign({ user: userPayload }, config.secureToken as string);
+    return res.status(200).json({ status: 'success!', data: { ...userPayload, token }, message: 'User authenticated.' });
+  } catch (error) {
+    return next(error);
+  }
+};

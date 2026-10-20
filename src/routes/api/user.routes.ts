@@ -1,18 +1,14 @@
-//Router-express 
-import { Router } from "express";
-import authenticationMiddleware from "../../Middleware/Auth/auth";
-// import controllers
-import  * as handlers from "../../handlers/userControllers";
-// create intance from  routes
-const usrRouts = Router();
-// add Routers assined to first Endpoint 
-usrRouts.route('/all').get( authenticationMiddleware,handlers.GetAllUsers);
-usrRouts.route( '/:id').get( authenticationMiddleware,handlers.GetSpecificUser);
-usrRouts.route('/register').post(handlers.CreateRecordUser)
-usrRouts.route('/:id/edit').patch( authenticationMiddleware,handlers.UpdateRecordUser);
-usrRouts.route('/:id/delete').delete( authenticationMiddleware,handlers.DeleteUser);
+import { Router } from 'express';
+import authenticationMiddleware from '../../Middleware/Auth/auth';
+import * as handlers from '../../handlers/userControllers';
 
-// CREATE Auth
-usrRouts.route('/signin').post( authenticationMiddleware,handlers.authentication)
+const userRoutes = Router();
 
-export default usrRouts; 
+userRoutes.get('/', authenticationMiddleware, handlers.GetAllUsers);
+userRoutes.get('/:id', authenticationMiddleware, handlers.GetSpecificUser);
+userRoutes.post('/register', authenticationMiddleware, handlers.CreateRecordUser);
+userRoutes.patch('/:id/edit', authenticationMiddleware, handlers.UpdateRecordUser);
+userRoutes.delete('/:id/delete', authenticationMiddleware, handlers.DeleteUser);
+userRoutes.post('/signin', handlers.authentication);
+
+export default userRoutes;

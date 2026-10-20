@@ -1,79 +1,100 @@
 ﻿# Node.js Store Front API
 
-A TypeScript + Express backend for managing users, products, and orders in a storefront system.
+A Bun-first TypeScript + Express backend for a storefront system with users, products, and orders.
 
-## Project goal
+## Overview
 
-This repository is a simple store management API built to practice backend development patterns such as:
+This project is a learning-oriented backend API that demonstrates common storefront patterns:
 
-- Express routing
-- PostgreSQL integration
+- Express route setup
+- PostgreSQL access
 - JWT-based authentication
 - validation and error handling
-- TypeScript model/controller organization
+- TypeScript controller/model layering
 
-## Tech stack
+## Stack
 
-- Node.js
+- Bun
 - TypeScript
 - Express
 - PostgreSQL
 - Jasmine
-- Bun support
+
+## Prerequisites
+
+- Bun 1.x
+- PostgreSQL running locally or on a reachable host
 
 ## Quick start
 
-### Using Bun (recommended)
-
 ```bash
 bun install
-bun run dev:bun
+cp .env.example .env
+bun run dev
 ```
 
-### Using npm
+## Scripts
 
 ```bash
-npm install
-npm run dev
-```
-
-## Common scripts
-
-```bash
-npm run dev
-npm run dev:bun
-npm run build
-npm run build:bun
-npm run start
-npm run start:bun
-npm test
-npm run test:bun
+bun run dev
+bun run build
+bun run start
+bun test
+bun run test:bun
 ```
 
 ## Environment
 
-Create a local environment file:
+Use the example file as the base for your local config:
 
 ```bash
 cp .env.example .env
 ```
 
-Then fill in the database and auth values before running the app.
+Example:
+
+```env
+PORT=4000
+ENV=dev
+PG_HOST=localhost
+PG_PORT=5432
+PG_USER=postgres
+PG_PASSWORD=postgres
+PG_DB=storefront
+PG_DB_TEST=storefront_test
+PG_BCRYPY_SC=storefront
+PG_SALT_ROUND=10
+PG_MYTOKEN=replace-with-a-secure-secret-key
+```
 
 ## Folder overview
 
-- `src/config/` — environment and app configuration values
-- `src/database/` — PostgreSQL connection pool setup
-- `src/handlers/` — controller logic for requests and responses
-- `src/model/` — database query/repository layer
-- `src/routes/` — Express route registration and API layout
-- `src/Middleware/` — security and auth middleware
-- `src/types/` — TypeScript interfaces and data contracts
-- `src/tests/` — Jasmine test suite
-- `src/errors/` — shared custom error objects
-- `migrations/` — SQL/db migration scripts
-- `spec/` — Jasmine config and test support
+- `src/config/` — environment configuration
+- `src/database/` — PostgreSQL pool initialization
+- `src/handlers/` — HTTP controllers and business logic
+- `src/model/` — database query layer
+- `src/routes/` — API route organization
+- `src/Middleware/` — auth and error middleware
+- `src/types/` — shared TypeScript shapes
+- `src/tests/` — Jasmine tests
+- `src/errors/` — shared application error helpers
+- `migrations/` — database migration scripts
+- `spec/` — Jasmine configuration support
+
+## API conventions
+
+The application exposes endpoints under the main API prefix:
+
+- `/api/users`
+- `/api/products`
+- `/api/orders`
+
+Legacy singular routes are still supported where needed for compatibility, but the standard API layout is now pluralized and easier to follow.
 
 ## Notes
 
-This project is still a backend learning/demo project and not a full production SaaS application yet. It is, however, structured to be understandable and extendable.
+This project is still best treated as a backend learning/demo project rather than a full production SaaS app. It is, however, much cleaner and easier to extend than its older legacy version.
+
+## License
+
+ISC
